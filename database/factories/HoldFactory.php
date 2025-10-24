@@ -21,4 +21,13 @@ final class HoldFactory extends Factory
             'status' => HoldStatus::HELD,
         ];
     }
+    
+    public function confirmed(): self
+    {
+        return $this->state(function (): array {
+            return [
+                'status' => HoldStatus::CONFIRMED,
+            ];
+        });
+    }
 }

@@ -34,8 +34,8 @@ final class HoldController extends Controller
         return response()->json($this->slotService->confirmHold($hold));
     }
 
-    public function delete(Hold $hold)
+    public function delete(Hold $hold): JsonResponse
     {
-        return response()->json($hold);
+        return response()->json($this->slotService->cancelHold($hold));
     }
 }

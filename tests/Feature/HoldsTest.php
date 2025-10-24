@@ -42,4 +42,23 @@ final class HoldsTest extends TestCase
         ]));
         $response->assertStatus(409);
     }
+
+    public function test_can_cancel_hold()
+    {
+        $hold = Hold::factory()
+            ->for(Slot::factory()->state([
+                'capacity' => 10,
+                'remaining' => 5,
+            ]))
+            ->confirmed()
+            ->create();
+        $response = $this->delete(route('holds.delete', [
+            'hold' => $hold->id,
+        ]));
+        $response->assertStatus(200);
+        $hold->refresh();
+        $this->assertEquals(HoldStatus::CANCELLED, $hold->status);
+        $slot = $hold->slot->refresh();
+        $this->assertEquals(6, $slot->remaining);
+    }
 }

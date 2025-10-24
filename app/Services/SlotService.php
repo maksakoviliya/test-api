@@ -43,4 +43,19 @@ final class SlotService
 
         return new HoldResource($hold->refresh());
     }
+
+    public function cancelHold(Hold $hold): HoldResource
+    {
+        $hold->update([
+            'status' => HoldStatus::CANCELLED,
+        ]);
+
+        $hold->slot->update([
+            'remaining' => $hold->slot->remaining < $hold->slot->capacity 
+                ? $hold->slot->remaining + 1 
+                : $hold->slot->remaining,
+        ]);
+
+        return new HoldResource($hold->refresh());
+    }
 }
