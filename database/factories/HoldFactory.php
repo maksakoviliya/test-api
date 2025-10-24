@@ -19,9 +19,10 @@ final class HoldFactory extends Factory
         return [
             'slot_id' => Slot::factory(),
             'status' => HoldStatus::HELD,
+            'idempotency_key' => $this->faker->uuid(),
         ];
     }
-    
+
     public function confirmed(): self
     {
         return $this->state(function (): array {

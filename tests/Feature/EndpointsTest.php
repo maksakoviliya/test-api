@@ -7,11 +7,13 @@ namespace Tests\Feature;
 use App\Models\Hold;
 use App\Models\Slot;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 final class EndpointsTest extends TestCase
 {
     use refreshDatabase;
+    use WithFaker;
 
     public function test_slots_availability_endpoint(): void
     {
@@ -24,7 +26,9 @@ final class EndpointsTest extends TestCase
         $slot = Slot::factory()->available()->create();
         $response = $this->post(route('slots.holds.store', [
             'slot' => $slot->id,
-        ]));
+        ]), [], [
+            'Idempotency-Key' => $this->faker->uuid(),
+        ]);
         $response->assertStatus(201);
     }
 

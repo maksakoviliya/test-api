@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
-use App\Enums\HoldStatus;
 use App\Models\Slot;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -26,7 +25,7 @@ final class SlotFactory extends Factory
         return $this->state(function (): array {
             return [
                 'capacity' => 10,
-                'remaining' => 0
+                'remaining' => 0,
             ];
         });
     }
@@ -36,7 +35,7 @@ final class SlotFactory extends Factory
         return $this->state(function (): array {
             return [
                 'capacity' => 10,
-                'remaining' => 10
+                'remaining' => 10,
             ];
         });
     }

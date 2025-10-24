@@ -10,12 +10,14 @@ use App\Http\Resources\SlotResource;
 use App\Models\Hold;
 use App\Models\Slot;
 use Illuminate\Contracts\Cache\LockTimeoutException;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Cache;
 
 final class SlotService
 {
     public const CACHE_KEY = 'available_slots';
+
     private const CACHE_LOCK_KEY = 'lock:available_slots';
 
     /**
@@ -24,10 +26,10 @@ final class SlotService
     public function getAvailableSlots(): AnonymousResourceCollection
     {
         $slots = Cache::get(self::CACHE_KEY);
-        
-        if(!$slots) {
+
+        if (! $slots) {
             $lock = Cache::lock(self::CACHE_LOCK_KEY, 10);
-            
+
             if ($lock->get()) {
                 try {
                     $slots = SlotResource::collection(Slot::all());
@@ -40,7 +42,7 @@ final class SlotService
                 $slots = Cache::get(self::CACHE_KEY);
             }
         }
-        
+
         return SlotResource::collection($slots);
     }
 
@@ -54,11 +56,22 @@ final class SlotService
         return $slot->capacity - $slot->remaining > 1;
     }
 
-    public function createHoldForSlot(Slot $slot): HoldResource
+    public function createHoldForSlot(Request $request, Slot $slot): HoldResource
     {
+        $idempotencyKey = $request->header('Idempotency-Key');
+        if ($hold = Hold::query()->where('idempotency_key', $idempotencyKey)
+            ->first()) {
+            return new HoldResource($hold);
+        }
+
+        if (! $this->isSlotAvailable($slot)) {
+            abort(409, 'Conflict');
+        }
+
         return new HoldResource(Hold::query()->create([
             'slot_id' => $slot->id,
             'status' => HoldStatus::HELD,
+            'idempotency_key' => $idempotencyKey,
         ]));
     }
 
@@ -73,7 +86,7 @@ final class SlotService
         ]);
 
         $this->invalidateCache();
-        
+
         return new HoldResource($hold->refresh());
     }
 
@@ -84,8 +97,8 @@ final class SlotService
         ]);
 
         $hold->slot->update([
-            'remaining' => $hold->slot->remaining < $hold->slot->capacity 
-                ? $hold->slot->remaining + 1 
+            'remaining' => $hold->slot->remaining < $hold->slot->capacity
+                ? $hold->slot->remaining + 1
                 : $hold->slot->remaining,
         ]);
 

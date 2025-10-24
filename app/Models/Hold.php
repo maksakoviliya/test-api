@@ -24,6 +24,7 @@ final class Hold extends Model
     protected $fillable = [
         'slot_id',
         'status',
+        'idempotency_key',
     ];
 
     protected $casts = [

@@ -16,14 +16,12 @@ return new class extends Migration
 
             $table->foreignIdFor(Slot::class)->constrained()->cascadeOnDelete();
             $table->string('status');
+            $table->uuid('idempotency_key')->unique();
 
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('holds');

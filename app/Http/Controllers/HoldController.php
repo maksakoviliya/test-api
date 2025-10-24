@@ -18,11 +18,7 @@ final class HoldController extends Controller
 
     public function store(Request $request, Slot $slot): JsonResponse
     {
-        if (! $this->slotService->isSlotAvailable($slot)) {
-            abort(409, 'Conflict');
-        }
-
-        return response()->json($this->slotService->createHoldForSlot($slot), 201);
+        return response()->json($this->slotService->createHoldForSlot($request, $slot), 201);
     }
 
     public function confirm(Hold $hold): JsonResponse
@@ -30,7 +26,7 @@ final class HoldController extends Controller
         if (! $this->slotService->isSlotAvailable($hold->slot)) {
             abort(409, 'Conflict');
         }
-        
+
         return response()->json($this->slotService->confirmHold($hold));
     }
 
