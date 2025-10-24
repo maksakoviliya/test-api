@@ -13,7 +13,7 @@ use Illuminate\Http\Request;
 final class HoldController extends Controller
 {
     public function __construct(
-        private SlotService $slotService,
+        private readonly SlotService $slotService,
     ) {}
 
     public function store(Request $request, Slot $slot): JsonResponse
@@ -25,9 +25,13 @@ final class HoldController extends Controller
         return response()->json($this->slotService->createHoldForSlot($slot), 201);
     }
 
-    public function confirm(Hold $hold)
+    public function confirm(Hold $hold): JsonResponse
     {
-        return response()->json($hold);
+        if (! $this->slotService->isSlotAvailable($hold->slot)) {
+            abort(409, 'Conflict');
+        }
+        
+        return response()->json($this->slotService->confirmHold($hold));
     }
 
     public function delete(Hold $hold)

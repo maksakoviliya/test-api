@@ -30,4 +30,17 @@ final class SlotService
             'status' => HoldStatus::HELD,
         ]));
     }
+
+    public function confirmHold(Hold $hold): HoldResource
+    {
+        $hold->update([
+            'status' => HoldStatus::CONFIRMED,
+        ]);
+
+        $hold->slot->update([
+            'remaining' => $hold->slot->remaining > 1 ? $hold->slot->remaining - 1 : 1,
+        ]);
+
+        return new HoldResource($hold->refresh());
+    }
 }

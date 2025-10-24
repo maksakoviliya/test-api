@@ -21,7 +21,7 @@ final class EndpointsTest extends TestCase
 
     public function test_slots_store_hold_endpoint()
     {
-        $slot = Slot::factory()->create();
+        $slot = Slot::factory()->available()->create();
         $response = $this->post(route('slots.holds.store', [
             'slot' => $slot->id,
         ]));
@@ -30,7 +30,9 @@ final class EndpointsTest extends TestCase
 
     public function test_confirm_hold_endpoint()
     {
-        $hold = Hold::factory()->create();
+        $hold = Hold::factory()
+            ->for(Slot::factory()->available())
+            ->create();
         $response = $this->post(route('holds.confirm', [
             'hold' => $hold->id,
         ]));
