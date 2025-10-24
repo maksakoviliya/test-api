@@ -4,13 +4,18 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\JsonResponse;
+use App\Services\SlotService;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 final class AvailabilityController extends Controller
 {
-    public function __invoke(Request $request): JsonResponse
+    public function __construct(
+        private readonly SlotService $slotService,
+    ) {}
+
+    public function __invoke(Request $request): AnonymousResourceCollection
     {
-        return response()->json(true);
+        return $this->slotService->getAvailableSlots();
     }
 }

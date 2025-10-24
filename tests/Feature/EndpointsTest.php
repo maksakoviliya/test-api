@@ -37,12 +37,12 @@ final class EndpointsTest extends TestCase
         $response->assertStatus(200);
     }
 
-	public function test_delete_hold_endpoint()
-	{
-		$hold = Hold::factory()->create();
-		$response = $this->delete(route('holds.delete', [
-			'hold' => $hold->id,
-		]));
-		$response->assertStatus(200);
-	}
+    public function test_delete_hold_endpoint()
+    {
+        $hold = Hold::factory()->create();
+        $response = $this->delete(route('holds.delete', [
+            'hold' => $hold->id,
+        ]));
+        $response->assertStatus(200);
+    }
 }
