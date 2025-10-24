@@ -94,7 +94,7 @@ final class SlotsTest extends TestCase
             'remaining' => 0,
         ]);
         $idempotencyKey = $this->faker->uuid();
-        
+
         $response = $this->post(route('slots.holds.store', [
             'slot' => $slot->id,
         ]), [], [

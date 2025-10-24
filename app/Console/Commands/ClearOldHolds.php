@@ -20,7 +20,7 @@ class ClearOldHolds extends Command
             ->where('created_at', '<', now()->subMinutes(15))
             ->where('status', HoldStatus::HELD)
             ->delete();
-        
+
         return parent::SUCCESS;
     }
 }
